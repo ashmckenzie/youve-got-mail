@@ -62,12 +62,9 @@ void generate_battery_report(char *buff) {
   dtostrf(vcc, 0, 2, buff);
 }
 
-void sleep(int times) {
+void sleep() {
   radio.sleep();
-
-  for (int i=0 ; i < times ; i++) {
-    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  }
+  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
 }
 
 long read_vcc() {

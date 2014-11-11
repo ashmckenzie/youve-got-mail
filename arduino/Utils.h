@@ -7,4 +7,4 @@ long read_vcc();
 void send_data_proto(char *message, int gateway_id, char *node_name, int led_pin);
 void setup_serial(int speed);
 void setup_radio(int node_id, int network_id, char *encrypt_key);
-void sleep(int times);
+void sleep();

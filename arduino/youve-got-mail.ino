@@ -15,6 +15,7 @@
 #define LED_PIN        9
 #define MOTION_PIN     1 // hardware interrupt 1 (D3)
 
+int loops = 0;
 volatile boolean ready = false;
 volatile boolean motion_detected = false;
 
@@ -98,11 +99,13 @@ void setup() {
 
 void loop() {
   if (motion_detected) {
+    loops = 0;
     motion_detected_action();
-  } else {
+  } else if (loops++ >= 10) {
+    loops = 0;
     send_ping();
   }
 
   motion_detected = false;
-  sleep(8);
+  sleep();
 }
