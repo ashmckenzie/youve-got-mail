@@ -13,7 +13,6 @@ enum period_t
 	SLEEP_2S,
 	SLEEP_4S,
 	SLEEP_8S,
-	SLEEP_60S,
 	SLEEP_FOREVER
 };
 

@@ -35,7 +35,7 @@ bool RFM69::initialize(byte freqBand, byte nodeID, byte networkID)
     /* 0x07 */ { REG_FRFMSB, (freqBand==RF69_315MHZ ? RF_FRFMSB_315 : (freqBand==RF69_433MHZ ? RF_FRFMSB_433 : (freqBand==RF69_868MHZ ? RF_FRFMSB_868 : RF_FRFMSB_915))) },
     /* 0x08 */ { REG_FRFMID, (freqBand==RF69_315MHZ ? RF_FRFMID_315 : (freqBand==RF69_433MHZ ? RF_FRFMID_433 : (freqBand==RF69_868MHZ ? RF_FRFMID_868 : RF_FRFMID_915))) },
     /* 0x09 */ { REG_FRFLSB, (freqBand==RF69_315MHZ ? RF_FRFLSB_315 : (freqBand==RF69_433MHZ ? RF_FRFLSB_433 : (freqBand==RF69_868MHZ ? RF_FRFLSB_868 : RF_FRFLSB_915))) },
-    
+
     // looks like PA1 and PA2 are not implemented on RFM69W, hence the max output power is 13dBm
     // +17dBm and +20dBm are possible on RFM69HW
     // +13dBm formula: Pout=-18+OutputPower (with PA0 or PA1**)
@@ -43,9 +43,9 @@ bool RFM69::initialize(byte freqBand, byte nodeID, byte networkID)
     // +20dBm formula: Pout=-11+OutputPower (with PA1 and PA2)** and high power PA settings (section 3.3.7 in datasheet)
     ///* 0x11 */ { REG_PALEVEL, RF_PALEVEL_PA0_ON | RF_PALEVEL_PA1_OFF | RF_PALEVEL_PA2_OFF | RF_PALEVEL_OUTPUTPOWER_11111},
     ///* 0x13 */ { REG_OCP, RF_OCP_ON | RF_OCP_TRIM_95 }, //over current protection (default is 95mA)
-    
+
     ///* 0x18*/ { REG_LNA,  RF_LNA_ZIN_200 | RF_LNA_CURRENTGAIN }, //as suggested by mav here: http://lowpowerlab.com/forum/index.php/topic,296.msg1571.html
-    
+
     // RXBW defaults are { REG_RXBW, RF_RXBW_DCCFREQ_010 | RF_RXBW_MANT_24 | RF_RXBW_EXP_5} (RxBw: 10.4khz)
     /* 0x19 */ { REG_RXBW, RF_RXBW_DCCFREQ_010 | RF_RXBW_MANT_16 | RF_RXBW_EXP_2 }, //(BitRate < 2 * RxBw)
     /* 0x25 */ { REG_DIOMAPPING1, RF_DIOMAPPING1_DIO0_01 }, //DIO0 is the only IRQ we're using
@@ -68,10 +68,10 @@ bool RFM69::initialize(byte freqBand, byte nodeID, byte networkID)
   SPI.setBitOrder(MSBFIRST);
   SPI.setClockDivider(SPI_CLOCK_DIV2); //max speed, except on Due which can run at system clock speed
   SPI.begin();
-  
+
   do writeReg(REG_SYNCVALUE1, 0xaa); while (readReg(REG_SYNCVALUE1) != 0xaa);
 	do writeReg(REG_SYNCVALUE1, 0x55); while (readReg(REG_SYNCVALUE1) != 0x55);
-  
+
   for (byte i = 0; CONFIG[i][0] != 255; i++)
     writeReg(CONFIG[i][0], CONFIG[i][1]);
 
@@ -83,7 +83,7 @@ bool RFM69::initialize(byte freqBand, byte nodeID, byte networkID)
   setMode(RF69_MODE_STANDBY);
 	while ((readReg(REG_IRQFLAGS1) & RF_IRQFLAGS1_MODEREADY) == 0x00); // Wait for ModeReady
   attachInterrupt(0, RFM69::isr0, RISING);
-  
+
   selfPointer = this;
   _address = nodeID;
   return true;
@@ -215,14 +215,14 @@ void RFM69::sendFrame(byte toAddress, const void* buffer, byte bufferSize, bool 
 	SPI.transfer(bufferSize + 3);
 	SPI.transfer(toAddress);
   SPI.transfer(_address);
-  
+
   //control byte
   if (sendACK)
     SPI.transfer(0x80);
   else if (requestACK)
     SPI.transfer(0x40);
   else SPI.transfer(0x00);
-  
+
 	for (byte i = 0; i < bufferSize; i++)
     SPI.transfer(((byte*)buffer)[i]);
 	unselect();
@@ -255,10 +255,10 @@ void RFM69::interruptHandler() {
     DATALEN = PAYLOADLEN - 3;
     SENDERID = SPI.transfer(0);
     byte CTLbyte = SPI.transfer(0);
-    
+
     ACK_RECEIVED = CTLbyte & 0x80; //extract ACK-requested flag
     ACK_REQUESTED = CTLbyte & 0x40; //extract ACK-received flag
-    
+
     for (byte i= 0; i < DATALEN; i++)
     {
       DATA[i] = SPI.transfer(0);
@@ -393,7 +393,7 @@ void RFM69::setCS(byte newSPISlaveSelect) {
 void RFM69::readAllRegs()
 {
   byte regVal;
-	
+
   for (byte regAddr = 1; regAddr <= 0x4F; regAddr++)
 	{
     select();
