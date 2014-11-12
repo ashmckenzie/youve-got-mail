@@ -1,0 +1,9 @@
+#!/bin/sh
+
+exec 2>&1
+
+export GOPATH=/home/ash/go
+export GOROOT=/usr/local/go 
+
+cd /home/ash/apps/youve-got-mail
+exec ./run.sh
